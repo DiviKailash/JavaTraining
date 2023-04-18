@@ -1,0 +1,9 @@
+
+
+---No8
+21. Check whether all the emps numbers are indeed unique.
+SELECT DISTINCT empno FROM emp;
+22. List the Empno, Sal and Comm of emps.
+select empno,sal,comm from emp
+23. Display the unique dept with Jobs.
+select distinct deptno,job from emp;
