@@ -1,0 +1,89 @@
+set serveroutput on;
+declare
+emprec emp%rowtype;
+cursor mycur is select * from emp where job in('MANAGER','ANALYST');
+begin
+    open mycur;
+    loop
+    fetch mycur into emprec;
+    exit when mycur%NOTFOUND;    
+    dbms_output.put_line(emprec.ename || '    ' || emprec.sal); 
+    end loop;
+    close mycur;
+end;
+/
+
+--parameterList
+
+set serveroutput on;
+declare
+emprec emp%rowtype;
+cursor mycur(role varchar) is select * from emp where job in(role);
+begin
+    open mycur('MANAGER');
+    loop
+    fetch mycur into emprec;
+    exit when mycur%NOTFOUND;    
+    dbms_output.put_line(emprec.ename || '    ' || emprec.sal); 
+    end loop;
+    close mycur;
+    open mycur('ANALYST');
+    loop
+    fetch mycur into emprec;
+    exit when mycur%NOTFOUND;    
+    dbms_output.put_line(emprec.ename || '    ' || emprec.sal); 
+    end loop;
+    close mycur;
+end;
+/
+
+set serveroutput on;
+declare
+emprec emp%rowtype;
+cursor mycur is select * from emp ;
+begin
+    open mycur;
+    loop
+    fetch mycur into emprec;
+    exit when mycur%NOTFOUND;    
+    dbms_output.put_line(emprec.ename || '    ' || emprec.sal); 
+    end loop;
+    close mycur;
+end;
+/
+
+set serveroutput on;
+declare
+
+    ename emp.ename%type;
+    salary emp.sal%type;
+cursor mycur is select ename,sal from emp ;
+begin
+    open mycur;
+    loop
+    fetch mycur into ename,salary;
+    exit when mycur%NOTFOUND;    
+    dbms_output.put_line(ename || '    ' || salary); 
+    end loop;
+    close mycur;
+end;
+/
+---- reverse
+DECLARE
+num Number;
+revnum number;
+Begin
+num:=&g;
+revnum:= 0;
+WHILE num>0 LOOP
+revnum:=(revnum*10) + mod(num,10);
+num:=floor(num/10);
+END LOOP;
+DBMS_OUTPUT.PUT_LINE('Reverse of the number is: ' || revnum);
+END;
+/
+
+
+
+
+
