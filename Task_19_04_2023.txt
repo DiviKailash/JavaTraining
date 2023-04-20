@@ -1,0 +1,122 @@
+--- for copy table
+create table emp2 as select * from emp2
+
+Query1: function
+
+create or replace function GET_SERVICE_YRS(eno in number)
+return varchar2
+is
+ser number(10);
+begin
+   begin
+select FLOOR((to_date(SYSDATE)-to_date(hiredate))/365) into ser from emp where EMPNO = eno;
+EXCEPTION 
+   WHEN no_data_found THEN 
+   if ser is null then
+   --dbms_output.put_line('No such employee found');
+   raise_application_error(-20000,'No such employee found');
+   end if;    
+    end;
+      return ser;
+END GET_SERVICE_YRS;
+/
+
+
+select GET_SERVICE_YRS(7369) from dual;
+select GET_SERVICE_YRS(999) from dual;
+
+
+
+query2: procedure.
+
+create or replace procedure UPD_SAL(jb in varchar2,minsal in number,maxsal in number)
+as
+cnt number(10);
+exp_invalid exception;
+exp_max exception;
+begin
+select count(*) into cnt from emp2 where job=jb and sal > maxsal;
+begin
+if cnt = 0 then
+raise exp_invalid;
+elsif cnt > 0 then
+update emp2 set sal=maxsal where job = jb;
+else 
+raise exp_max;
+end if;
+end;
+exception
+when exp_invalid then
+raise_application_error(-20000,'No such job found');
+--dbms_output.put_line('invalid job');
+when exp_max then
+raise_application_error(-20001,'the maximum salary supplied is less than the
+minimum salary');
+--dbms_output.put_line('the maximum salary supplied is less than the minimum salary');
+
+
+end UPD_SAL;
+/
+
+execute upd_sal('CLERK',1000,1400);
+
+
+
+AS Package:
+================
+create or replace package emppack
+ as
+ procedure UPD_SAL(jb in varchar2,minsal in number,maxsal in number);
+ function GET_SERVICE_YRS(eno in number) return varchar2;
+ end;
+ 
+ create or replace package body emppack
+ as
+function GET_SERVICE_YRS(eno in number)
+return varchar2
+is
+ser number(10);
+begin
+   begin
+select FLOOR((to_date(SYSDATE)-to_date(hiredate))/365) into ser from emp where EMPNO = eno;
+EXCEPTION 
+   WHEN no_data_found THEN 
+   if ser is null then
+   --dbms_output.put_line('No such employee found');
+   raise_application_error(-20000,'No such employee found');
+   end if;    
+    end;
+      return ser;
+END GET_SERVICE_YRS;
+
+procedure UPD_SAL(jb in varchar2,minsal in number,maxsal in number)
+as
+cnt number(10);
+exp_invalid exception;
+exp_max exception;
+begin
+select count(*) into cnt from emp2 where job=jb and sal > maxsal;
+begin
+if cnt = 0 then
+raise exp_invalid;
+elsif cnt > 0 then
+update emp2 set sal=maxsal where job = jb;
+else 
+raise exp_max;
+end if;
+end;
+exception
+when exp_invalid then
+raise_application_error(-20000,'No such job found');
+--dbms_output.put_line('invalid job');
+when exp_max then
+raise_application_error(-20001,'the maximum salary supplied is less than the
+minimum salary');
+--dbms_output.put_line('the maximum salary supplied is less than the minimum salary');
+
+
+end UPD_SAL;
+ 
+ end emppack;
+ /
+ 
